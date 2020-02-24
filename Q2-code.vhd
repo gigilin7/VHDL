@@ -1,8 +1,11 @@
---**************************************************
---*    Scanning Keyboard And Display Key in DATA   *
---*      In Scanning Seven Segment  LED (1DIG)     *
---*      Filename : SEGMENT_KEYBOARD_1DIG.VHD      *
---************************************************
+--*******************************************************
+--*   Scanning Keyboard And Display Key in DATA         *
+--*   Counter From 00 to 15 And 15 to 00 Then Display   *
+--*   In Scanning Seven Segment  LED (1DIG)             *
+--*   Like An Elevator                                  *
+--*   Filename : Q2-code.vhd                            *
+--*   Title : SEGMENT_KEYBOARD_1DIG                     *
+--*******************************************************
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -24,7 +27,7 @@ architecture Behavioral of  SEGMENT_KEYBOARD_1DIG is
   signal PRESS          : std_logic;
   signal PRESS_VALID    : std_logic;
   signal DEBOUNCE_CLK   : std_logic;
-  signal DIVIDER        : std_logic_vector(13 downto 0);
+  signal DIVIDER        : std_logic_vector(13 downto 0); --調整呈現速度,數字越大越慢
   signal DEBOUNCE_COUNT : std_logic_vector(3 downto 0);
   signal SCAN_CODE      : std_logic_vector(3 downto 0);
   signal KEY_CODE       : std_logic_vector(3 downto 0);
@@ -35,10 +38,10 @@ begin
 --*   Debounce CLK Generator   *
 --******************************
 
-  process(CLK,RESET)
+  process(CLK,RESET) //調整速度
     begin 
 	 if RESET      = '0' then 
-	    DIVIDER   <= "00000000000000";
+	    DIVIDER   <= "00000000000000"; --數字填多大,就要多少個0
 	 elsif CLK'event and CLK = '1' then
 	    DIVIDER   <= DIVIDER + 1;
 	 end if;
@@ -49,7 +52,7 @@ begin
 	 end if;
 
   end process;
-  DEBOUNCE_CLK <= DIVIDER(13);
+  DEBOUNCE_CLK <= DIVIDER(13); --填到最大的數字最慢
   
 --********************************
 --*  Generate Scanning Key Code  *
@@ -129,38 +132,15 @@ begin
 	when others=>	KEY_CODE  <= SCAN_CODE;
 			     KEY_CODE1 <= "0000";
   end case;	   
-               
---           if SCAN_CODE="1010"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0000";
---	      elsif  SCAN_CODE="1011"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0001";
---		 elsif  SCAN_CODE="1100"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0010";
---		 elsif  SCAN_CODE="1101"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0011";
---		 elsif  SCAN_CODE="1110"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0100";
---		 elsif  SCAN_CODE="1111"
---		 then KEY_CODE1 <= "0001";
---		      KEY_CODE  <= "0101";
---	      else
---		 	 KEY_CODE  <= SCAN_CODE;
---			 KEY_CODE1 <= "0000";
---		 end if;
 
         end if;
       end if;
   end process;
 
 
---*************************
---*  Counter From 0 To 9  *
---*************************
+--***************************************
+--*  Counter From 00 To 15 And 15 To 00 *
+--***************************************
 
   process (COUNT_CLK,RESET)
 
@@ -174,12 +154,6 @@ begin
 		 KEY_CODE1 <= "0001";
 	   else KEY_CODE <= KEY_CODE + 1;
 	   end if;
---	    if KEY_CODE1 = "0101" then
---	       KEY_CODE1 <= "0000";
---	    else
---	       KEY_CODE1 <= KEY_CODE1 + 1;
---	    end if;
-	   
 	end if;
   end process;
 
@@ -190,6 +164,7 @@ begin
 
    process(DIVIDER(7))
   begin
+  --個位數
   if DIVIDER(7)='1' then
   case KEY_CODE is
      when "0000"=>	SEGMENT <= "1000000"; 	-- 0
@@ -204,7 +179,7 @@ begin
      when others=>	SEGMENT <= "1111111";
   end case;
 
-
+  --十位數
   else
   case KEY_CODE1 is
      when "0000"=>	SEGMENT <= "1000000"; 	-- 0
