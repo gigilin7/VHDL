@@ -1,8 +1,8 @@
 --***************************************
 --*   Counter From 00 to 59 And Display	*
---*   In Scanning Seven Segment LED    *
+--*   In Scanning Seven Segment LED     *
 --*   Filename : Q1-code.vhd      	*
---*   Title : SEGMENT_COUNT_0_9       *
+--*   Title : SEGMENT_COUNT_0_9         *
 --***************************************
 
 library IEEE;
@@ -20,7 +20,7 @@ end SEGMENT_COUNT_0_9;
 
 architecture Behavioral of SEGMENT_COUNT_0_9 is
   signal COUNT_CLK : std_logic;
-  signal DIVIDER   : std_logic_vector(24 downto 1); //調整呈現速度,數字越大越慢
+  signal DIVIDER   : std_logic_vector(24 downto 1); --調整呈現速度,數字越大越慢
   signal BCD       : std_logic_vector(3 downto 0);
   signal BCD1       : std_logic_vector(3 downto 0);
 begin
@@ -29,11 +29,11 @@ begin
 --*  Time Base Generation  *
 --**************************
 
-  process (CLK,RESET) //調整速度
+  process (CLK,RESET) --調整速度
 
     begin
       if RESET    = '0' then
-	    DIVIDER <= "000000000000000000000000"; //數字填多大,就要多少個0
+	    DIVIDER <= "000000000000000000000000"; --數字填多大,就要多少個0
 	 elsif CLK'event and CLK = '1' then
 	    DIVIDER <= DIVIDER + 1;
 	 end if;
@@ -43,7 +43,7 @@ begin
 	 else ENABLE <= "111101";
 	 end if;					
   end process;
-  COUNT_CLK <= DIVIDER(24); //填到最大的數字最慢
+  COUNT_CLK <= DIVIDER(24); --填到最大的數字最慢
 
 --*************************
 --*  Counter From 00 To 59  *
@@ -76,7 +76,7 @@ begin
   process(DIVIDER(17))
   begin
   if DIVIDER(17)='1' then
-  //個位數
+  --個位數
   case BCD is   
      when "0000"=>	SEGMENT <= "1000000"; 	-- 0
      when "0001"=>	SEGMENT <= "1111001";	-- 1
@@ -90,7 +90,7 @@ begin
      when others=>	SEGMENT <= "1111111";
   end case;
 
- //十位數
+ --十位數
   else
   case BCD1 is  
      when "0000"=>	SEGMENT <= "1000000"; 	-- 0
